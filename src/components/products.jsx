@@ -14,7 +14,7 @@ class Products extends React.Component {
     currentProducts: [],
     isOpen: false,
     isSecondOpen: false,
-    currentId: "",
+    currentId: 0,
     comments: [],
     rate: 1,
     comment: "",
@@ -34,42 +34,22 @@ class Products extends React.Component {
   closeSecondModal = () => this.setState({ isSecondOpen: false });
   addReview = async () => {
     const project = {
-      name: this.props.userName,
       comment: this.state.comment,
       rate: this.state.rate,
+      productId: this.state.currentId,
     };
-    const reviewId = "";
 
     console.log("actually in");
     try {
-      let response = await fetch(`https://m6d5.herokuapp.com/reviews`, {
+      await fetch(`http://localhost:5005/review`, {
         method: "POST",
         body: JSON.stringify(project),
         headers: new Headers({
           "Content-Type": "application/json",
         }),
       });
-      const res = await response.json();
-      console.log("review id ->", res);
-      console.log("product id->", this.state.currentId);
-      console.log("Response: " + res);
 
-      //add it to the products reviews array
-      let secondResponse = await fetch(
-        `https://m6d5.herokuapp.com/products/${this.state.currentId}/add-review/${res}`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            productId: this.state.currentId,
-            reviewId: res,
-          }),
-          headers: new Headers({
-            "Content-Type": "application/json",
-          }),
-        }
-      );
-      console.log(secondResponse);
-      return res;
+      this.closeModal();
     } catch (e) {
       console.log("ERROR fetching HERE " + e);
     }
@@ -148,16 +128,20 @@ class Products extends React.Component {
             <Modal.Title>Reviews</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {this.state.comments.map((comment) => (
-              <p>
-                {" "}
-                <img
-                  className="commentSectionPic"
-                  src="https://i.stack.imgur.com/l60Hf.png"
-                />{" "}
-                {comment.name} : {comment.comment} {comment.rate}/5{" "}
-              </p>
-            ))}
+            {this.state.comments.length > 0 ? (
+              this.state.comments.map((comment) => (
+                <p>
+                  {" "}
+                  <img
+                    className="commentSectionPic"
+                    src="https://i.stack.imgur.com/l60Hf.png"
+                  />{" "}
+                  {comment.name} : {comment.comment} {comment.rate}/5{" "}
+                </p>
+              ))
+            ) : (
+              <p>There are no comments :(</p>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.closeSecondModal}>
@@ -171,23 +155,30 @@ class Products extends React.Component {
           </Modal.Header>
           <Modal.Body>
             <Form>
-              <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>Rate</Form.Label>
-                <Form.Control
-                  type="text"
-                  onChange={(event) => this.changeStateRate(event)}
-                  placeholder="Dont be rude pls"
-                />
-              </Form.Group>
+              <Form.Row>
+                <Col>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>Comment</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      onChange={(event) => this.changeStateComment(event)}
+                      placeholder="Dont be rude pls"
+                    />
+                  </Form.Group>
+                </Col>
 
-              <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>Comment</Form.Label>
-                <Form.Control
-                  type="text"
-                  onChange={(event) => this.changeStateComment(event)}
-                  placeholder="Dont be rude pls"
-                />
-              </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>Rate</Form.Label>
+                  <Form.Control
+                    type="number"
+                    defaultValue={3}
+                    min={0}
+                    max={5}
+                    onChange={(event) => this.changeStateRate(event)}
+                    placeholder="Dont be rude pls"
+                  />
+                </Form.Group>
+              </Form.Row>
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -211,29 +202,38 @@ class Products extends React.Component {
                       style={{ height: "300px", objectFit: "cover" }}
                     />
                     <Card.Body>
-                      <div className="d-none">{project.id}</div>
-                      <Card.Title>{project.name}</Card.Title>
-                      <Card.Text>{project.description}</Card.Text>
-                      <Card.Text>Brand / {project.brand}</Card.Text>
-                      <Button variant="success">Buy Now {project.price}</Button>
-                      <Button
-                        variant="secondary"
-                        onClick={(e) => this.openModal(project.id)}
-                      >
-                        Add a review
-                      </Button>
-                      <Button
-                        variant="info"
-                        onClick={(e) => this.getTheReviews(project.id)}
-                      >
-                        See Reviews
-                      </Button>
-                      <Button
-                        variant="danger"
-                        onClick={(e) => this.deleteProduct(e, project.id)}
-                      >
-                        Delete Product{" "}
-                      </Button>
+                      <div className="d-none position-relative">
+                        {project.id}
+                      </div>
+                      <Card.Title>
+                        {project.name}:{" "}
+                        <small> in {project.category.name}</small>
+                      </Card.Title>
+                      <div className="productInfoBox">
+                        <Card.Text>{project.description}</Card.Text>
+                        <Card.Text>Brand / {project.brand}</Card.Text>
+                        <Button variant="success">
+                          Buy Now {project.price}
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={(e) => this.openModal(project.id)}
+                        >
+                          Add a review
+                        </Button>
+                        <Button
+                          variant="info"
+                          onClick={(e) => this.getTheReviews(project.id)}
+                        >
+                          See Reviews
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={(e) => this.deleteProduct(e, project.id)}
+                        >
+                          Delete Product{" "}
+                        </Button>
+                      </div>
                     </Card.Body>
                   </Card>
                 </Col>
