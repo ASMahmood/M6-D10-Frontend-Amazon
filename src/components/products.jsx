@@ -109,12 +109,18 @@ class Products extends React.Component {
       let response = await fetch(
         `http://localhost:5005/category/` + this.props.filter
       );
-      response = await response.json();
+      let res = await response.json();
 
       console.log(response);
-      this.setState({ currentProducts: response.products });
-      this.setState({ category: response.name });
-      return response;
+      console.log(res);
+      this.props.filter !== 0
+        ? this.setState({
+            currentProducts: res.products,
+            category: res.name,
+          })
+        : this.setState({ currentProducts: res });
+
+      return res;
 
       //console.log("user", response)
     } catch (e) {
@@ -122,18 +128,11 @@ class Products extends React.Component {
     }
   };
   componentDidMount = async () => {
-    this.fetchProducts();
+    this.fetchCategory();
   };
   componentDidUpdate = (prevProps) => {
     if (prevProps.filter !== this.props.filter) {
-      this.fetchProps(prevProps);
-    }
-  };
-  fetchProps = (prev) => {
-    if (this.props.filter > 0) {
       this.fetchCategory();
-    } else {
-      this.fetchProducts();
     }
   };
 
@@ -225,9 +224,10 @@ class Products extends React.Component {
         <Container>
           <Row className="justify-content-center">
             {this.state.currentProducts &&
-              this.state.currentProducts.length !== 0 &&
+              this.state.currentProducts.length > 0 &&
               this.state.currentProducts.map((project, index) => (
                 <Col xs={3} className="mt-5" key={index}>
+                  {console.log(project)}
                   <Card value={project.id}>
                     <Card.Img
                       variant="top"

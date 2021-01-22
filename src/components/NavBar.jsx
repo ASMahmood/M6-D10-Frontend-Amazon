@@ -18,7 +18,11 @@ class navbar extends Component {
           style={{ height: "65px", backgroundColor: "#131921" }}
         >
           <Navbar.Brand href="/">
-            <img src={logo} style={{ height: "30px", width: "100px" }} />
+            <img
+              src={logo}
+              onClick={() => this.props.location.push("/")}
+              style={{ height: "30px", width: "100px" }}
+            />
           </Navbar.Brand>
 
           <Nav.Link>

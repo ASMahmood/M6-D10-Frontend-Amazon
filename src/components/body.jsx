@@ -25,7 +25,7 @@ class Body extends React.Component {
       brand: this.state.brand,
       imgurl: this.state.imgurl,
       price: this.state.price,
-      category: this.state.category,
+      categoryId: this.state.category,
     };
     console.log("actually in");
     try {
@@ -43,6 +43,8 @@ class Body extends React.Component {
         console.log("RES=" + res);
         if (this.state.image !== null) {
           this.attachImage(res.id);
+        } else {
+          this.props.history.push("/");
         }
       } else {
         alert("not added");
@@ -67,6 +69,7 @@ class Body extends React.Component {
           Accept: "application/json",
         }),
       });
+      this.props.history.push("/");
     } catch (error) {
       console.log(error);
     }
