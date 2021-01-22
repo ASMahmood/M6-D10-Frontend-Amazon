@@ -36,9 +36,6 @@ nav input[type="text"]:focus {
   outline: none;
 }
 
-.form-label {
-  color: white;
-}
-.modal-body .form-label {
-  color: black;
+body {
+  background-color: #eaeded;
 }

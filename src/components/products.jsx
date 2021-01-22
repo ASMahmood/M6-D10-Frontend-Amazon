@@ -1,13 +1,7 @@
 import React from "react";
 import {
   Form,
-  Navbar,
-  Nav,
-  FormControl,
-  Image,
-  Dropdown,
   Container,
-  ListGroup,
   Button,
   Card,
   Modal,
@@ -83,7 +77,7 @@ class Products extends React.Component {
 
   deleteProduct = async (e, id) => {
     try {
-      let response = await fetch(`https://m6d5.herokuapp.com/products/${id}`, {
+      let response = await fetch(`http://localhost:5005/product/${id}`, {
         method: "DELETE",
       });
       console.log(response);
@@ -112,9 +106,12 @@ class Products extends React.Component {
   getTheReviews = async (id) => {
     this.openSecondModal();
     try {
-      let response = await fetch(`https://m6d5.herokuapp.com/products/${id}`, {
-        method: "GET",
-      });
+      let response = await fetch(
+        `http://localhost:5005/product/${id}/reviews`,
+        {
+          method: "GET",
+        }
+      );
       response = await response.json();
       this.setState({ comments: response.reviews });
       console.log(response.reviews);
@@ -128,7 +125,7 @@ class Products extends React.Component {
 
   fetchProducts = async () => {
     try {
-      let response = await fetch(`hhttps://m6d5.herokuapp.com/products`);
+      let response = await fetch(`http://localhost:5005/product`);
       response = await response.json();
 
       console.log(response);
@@ -202,45 +199,47 @@ class Products extends React.Component {
             </Button>
           </Modal.Footer>
         </Modal>
-        <Row className="justify-content-center">
-          {this.state.currentProducts.length !== 0 &&
-            this.state.currentProducts.map((project) => (
-              <Col xs={3} className="mt-5">
-                <Card style={{ width: "18rem" }} value={project._id}>
-                  <Card.Img
-                    variant="top"
-                    src={project.imgUrl}
-                    style={{ height: "300px", objectFit: "cover" }}
-                  />
-                  <Card.Body>
-                    <div className="d-none">{project.id}</div>
-                    <Card.Title>{project.name}</Card.Title>
-                    <Card.Text>{project.description}</Card.Text>
-                    <Card.Text>Brand / {project.brand}</Card.Text>
-                    <Button variant="success">Buy Now {project.price}</Button>
-                    <Button
-                      variant="secondary"
-                      onClick={(e) => this.openModal(project._id)}
-                    >
-                      Add a review
-                    </Button>
-                    <Button
-                      variant="info"
-                      onClick={(e) => this.getTheReviews(project._id)}
-                    >
-                      See Reviews
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={(e) => this.deleteProduct(e, project._id)}
-                    >
-                      Delete Product{" "}
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-        </Row>
+        <Container>
+          <Row className="justify-content-center">
+            {this.state.currentProducts.length !== 0 &&
+              this.state.currentProducts.map((project, index) => (
+                <Col xs={3} className="mt-5" key={index}>
+                  <Card value={project.id}>
+                    <Card.Img
+                      variant="top"
+                      src={project.imgurl}
+                      style={{ height: "300px", objectFit: "cover" }}
+                    />
+                    <Card.Body>
+                      <div className="d-none">{project.id}</div>
+                      <Card.Title>{project.name}</Card.Title>
+                      <Card.Text>{project.description}</Card.Text>
+                      <Card.Text>Brand / {project.brand}</Card.Text>
+                      <Button variant="success">Buy Now {project.price}</Button>
+                      <Button
+                        variant="secondary"
+                        onClick={(e) => this.openModal(project.id)}
+                      >
+                        Add a review
+                      </Button>
+                      <Button
+                        variant="info"
+                        onClick={(e) => this.getTheReviews(project.id)}
+                      >
+                        See Reviews
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={(e) => this.deleteProduct(e, project.id)}
+                      >
+                        Delete Product{" "}
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+          </Row>
+        </Container>
       </>
     );
   }

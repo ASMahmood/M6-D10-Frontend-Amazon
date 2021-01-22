@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Navbar, Row, Col, Container, Dropdown, Nav } from "react-bootstrap";
+import { Navbar, Col, Dropdown, Nav } from "react-bootstrap";
 import logo from "./image/AmazonLogoNav.png";
 import "../css/Abdul.css";
 import { HiOutlineLocationMarker } from "react-icons/hi";

@@ -1,28 +1,7 @@
 import React from "react";
-import {
-  Form,
-  Navbar,
-  Nav,
-  FormControl,
-  Image,
-  Dropdown,
-  Container,
-  ListGroup,
-  Button,
-  Col,
-} from "react-bootstrap";
+import { Form, Container, Button, Col } from "react-bootstrap";
 import "../css/Evgeni.css";
 
-//-projectID - name - text - date;
-/*
-"_id": "5d318e1a8541744830bef139", //SERVER GENERATED
-        "name": "app test 1",  //REQUIRED
-        "description": "somthing longer", //REQUIRED
-        "brand": "nokia", //REQUIRED
-        "imageUrl": "https://drop.ndtv.com/TECH/product_database/images/2152017124957PM_635_nokia_3310.jpeg?downsize=*:420&output-quality=80",
-        "price": 100, //REQUIRED
-        "category": "smartphones"
-        */
 class Body extends React.Component {
   state = {
     name: "default",
@@ -30,21 +9,27 @@ class Body extends React.Component {
     brand: "",
     imgUrl: "",
     price: 0,
-    category: "",
+    category: 0,
     image: null,
+    cats: [],
   };
-  addProject = async () => {
+  componentDidMount = () => {
+    console.log(this.props);
+    this.setState({ cats: this.props.cats });
+  };
+  addProject = async (e) => {
+    e.preventDefault();
     const project = {
       name: this.state.name,
       description: this.state.description,
       brand: this.state.brand,
-      imgUrl: this.state.imgUrl,
+      imgurl: this.state.imgurl,
       price: this.state.price,
       category: this.state.category,
     };
     console.log("actually in");
     try {
-      let response = await fetch(`https://m6d5.herokuapp.com/products`, {
+      let response = await fetch(`http://localhost:5005/product`, {
         method: "POST",
         body: JSON.stringify(project),
         headers: new Headers({
@@ -52,11 +37,12 @@ class Body extends React.Component {
         }),
       });
       const res = await response.json();
-      if (response.ok) {
+      console.log(res);
+      if (res && response.ok) {
         console.log("RESPONSE=" + response);
         console.log("RES=" + res);
         if (this.state.image !== null) {
-          this.attachImage(res);
+          this.attachImage(res.id);
         }
       } else {
         alert("not added");
@@ -74,16 +60,13 @@ class Body extends React.Component {
       let image = new FormData();
       await image.append("productImage", this.state.image);
       console.log(image);
-      await fetch(
-        "https://m6d5.herokuapp.com/products/" + productID + "/upload",
-        {
-          method: "POST",
-          body: image,
-          headers: new Headers({
-            Accept: "application/json",
-          }),
-        }
-      );
+      await fetch("http://localhost:5005/product/" + productID + "/upload", {
+        method: "POST",
+        body: image,
+        headers: new Headers({
+          Accept: "application/json",
+        }),
+      });
     } catch (error) {
       console.log(error);
     }
@@ -94,7 +77,7 @@ class Body extends React.Component {
     console.log(this.state);
   };
   changeStateImage = async (event) => {
-    this.setState({ imgUrl: event.target.value });
+    this.setState({ imgurl: event.target.value });
     console.log(this.state);
   };
   changeStateDescription = async (event) => {
@@ -116,7 +99,7 @@ class Body extends React.Component {
         <Container>
           <div className="mainDiv mt-5">
             <Form>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              <Form.Group>
                 <Form.Label>Name</Form.Label>
                 <Form.Control
                   type="name"
@@ -124,7 +107,7 @@ class Body extends React.Component {
                   placeholder="Name"
                 />
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              <Form.Group>
                 <Form.Label>Description</Form.Label>
                 <Form.Control
                   type="email"
@@ -132,7 +115,7 @@ class Body extends React.Component {
                   placeholder="Description"
                 />
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              <Form.Group>
                 <Form.Label>Brand</Form.Label>
                 <Form.Control
                   type="text"
@@ -140,7 +123,7 @@ class Body extends React.Component {
                   placeholder="No nokias please"
                 />
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              <Form.Group>
                 <Form.Label>Price</Form.Label>
                 <Form.Control
                   type="number"
@@ -148,7 +131,7 @@ class Body extends React.Component {
                   placeholder="$$$"
                 />
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              <Form.Group>
                 <Form.Label>Image</Form.Label>
                 <Form.Control
                   type="text"
@@ -158,18 +141,26 @@ class Body extends React.Component {
               </Form.Group>
               <Form.Row>
                 <Col>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label htmlFor="category">Category</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="category"
-                      value={this.state.category}
-                      onChange={(e) =>
-                        this.setState({ category: e.currentTarget.value })
-                      }
-                      placeholder="Category"
-                    />
-                  </Form.Group>
+                  {this.state.cats.length > 0 && (
+                    <Form.Group controlId="formCategory">
+                      <Form.Label>Category</Form.Label>
+                      <Form.Control
+                        as="select"
+                        defaultValue="Choose A Category"
+                        onChange={(e) =>
+                          this.setState({ category: e.target.value })
+                        }
+                      >
+                        {this.state.cats.map((category, index) => {
+                          return (
+                            <option key={index} value={category.id}>
+                              {category.name}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                    </Form.Group>
+                  )}
                 </Col>
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>Upload Image</Form.Label>
@@ -184,7 +175,7 @@ class Body extends React.Component {
                 </Form.Group>
               </Form.Row>
 
-              <Button variant="info" onClick={() => this.addProject()}>
+              <Button variant="info" onClick={(e) => this.addProject(e)}>
                 {" "}
                 Add Product{" "}
               </Button>
