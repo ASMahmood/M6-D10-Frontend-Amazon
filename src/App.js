@@ -10,9 +10,13 @@ class App extends React.Component {
   state = {
     name: "guest",
     categories: [],
+    chosenFilter: 0,
   };
   changeUsername = async (username) => {
     this.setState({ name: username });
+  };
+  changeFilter = async (filter) => {
+    this.setState({ chosenFilter: filter });
   };
 
   componentDidMount = () => {
@@ -37,7 +41,9 @@ class App extends React.Component {
           <Router>
             <Navbar
               changeUsername={this.changeUsername}
+              changeFilter={this.changeFilter}
               userName={this.state.name}
+              cats={this.state.categories}
             />
             <Route
               path="/"

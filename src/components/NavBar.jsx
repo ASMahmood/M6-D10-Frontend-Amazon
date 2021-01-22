@@ -5,6 +5,7 @@ import logo from "./image/AmazonLogoNav.png";
 import "../css/Abdul.css";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { BiCart } from "react-icons/bi";
+import { BsList } from "react-icons/bs";
 
 import { Link } from "react-router-dom";
 import "../css/navbar.css";
@@ -126,6 +127,19 @@ class navbar extends Component {
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
+        </Navbar>
+        <Navbar id="categoryNav">
+          <Nav.Link onClick={() => this.props.changeFilter(0)}>
+            <BsList size={25} /> All
+          </Nav.Link>
+          {this.props.cats.length > 0 &&
+            this.props.cats.map((category) => {
+              return (
+                <Nav.Link onClick={() => this.props.changeFilter(category.id)}>
+                  {category.name}
+                </Nav.Link>
+              );
+            })}
         </Navbar>
       </div>
     );
