@@ -53,6 +53,7 @@ class App extends React.Component {
                   {...props}
                   userName={this.state.name}
                   cats={this.state.categories}
+                  filter={this.state.chosenFilter}
                 />
               )}
             />

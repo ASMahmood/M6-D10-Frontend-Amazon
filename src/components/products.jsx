@@ -18,6 +18,7 @@ class Products extends React.Component {
     comments: [],
     rate: 1,
     comment: "",
+    category: "",
   };
   openModal = (id) => {
     this.setState({
@@ -68,7 +69,7 @@ class Products extends React.Component {
       }
 
       console.log("Response: " + response);
-      this.fetchProducts();
+      this.fetchProps();
       return response;
     } catch (e) {
       console.log("ERROR fetching HERE " + e);
@@ -103,13 +104,16 @@ class Products extends React.Component {
     }
   };
 
-  fetchProducts = async () => {
+  fetchCategory = async () => {
     try {
-      let response = await fetch(`http://localhost:5005/product`);
+      let response = await fetch(
+        `http://localhost:5005/category/` + this.props.filter
+      );
       response = await response.json();
 
       console.log(response);
-      this.setState({ currentProducts: response });
+      this.setState({ currentProducts: response.products });
+      this.setState({ category: response.name });
       return response;
 
       //console.log("user", response)
@@ -120,6 +124,34 @@ class Products extends React.Component {
   componentDidMount = async () => {
     this.fetchProducts();
   };
+  componentDidUpdate = (prevProps) => {
+    if (prevProps.filter !== this.props.filter) {
+      this.fetchProps(prevProps);
+    }
+  };
+  fetchProps = (prev) => {
+    if (this.props.filter > 0) {
+      this.fetchCategory();
+    } else {
+      this.fetchProducts();
+    }
+  };
+
+  fetchProducts = async () => {
+    try {
+      let response = await fetch(`http://localhost:5005/product/`);
+      response = await response.json();
+
+      console.log("help", response);
+      this.setState({ currentProducts: response });
+      return response;
+
+      //console.log("user", response)
+    } catch (e) {
+      console.log("ERROR fetching HERE " + e);
+    }
+  };
+
   render() {
     return (
       <>
@@ -192,7 +224,8 @@ class Products extends React.Component {
         </Modal>
         <Container>
           <Row className="justify-content-center">
-            {this.state.currentProducts.length !== 0 &&
+            {this.state.currentProducts &&
+              this.state.currentProducts.length !== 0 &&
               this.state.currentProducts.map((project, index) => (
                 <Col xs={3} className="mt-5" key={index}>
                   <Card value={project.id}>
@@ -207,7 +240,13 @@ class Products extends React.Component {
                       </div>
                       <Card.Title>
                         {project.name}:{" "}
-                        <small> in {project.category.name}</small>
+                        <small>
+                          {" "}
+                          in{" "}
+                          {this.props.filter > 0
+                            ? this.state.category
+                            : project.category.name}
+                        </small>
                       </Card.Title>
                       <div className="productInfoBox">
                         <Card.Text>{project.description}</Card.Text>
