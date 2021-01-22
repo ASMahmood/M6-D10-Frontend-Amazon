@@ -1,0 +1,23 @@
+.project {
+  border: 1px black solid;
+  margin-bottom: 10px;
+}
+.mainDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+Button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.commentSectionPic{
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}

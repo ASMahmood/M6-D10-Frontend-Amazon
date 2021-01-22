@@ -1,0 +1,24 @@
+.profilePicDrop {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.dropdownContainer {
+  background-color: none;
+}
+.btn-primary {
+  all: none !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  margin-bottom: 15px;
+}
+.btn-primary :focus {
+  all: none !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+.btn-primary.dropdown-toggle:focus {
+  box-shadow: none !important;
+}
